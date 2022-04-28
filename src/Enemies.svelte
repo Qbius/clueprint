@@ -29,6 +29,7 @@
             {#if enemy_done(enemy, $donezo)}
                 <img alt="" src="/green_checkmark.png" class="img-checkmark">
             {/if}
+            <span class="enemy-name">{enemy}</span>
         </div>
     {/each}
 </div>
@@ -72,6 +73,17 @@
         height: 20px;
         background-color: white;
         border-radius: 100%;
+    }
+
+    .enemy-name {
+        position: absolute;
+        right: 10px;
+        bottom: 7px;
+        z-index: 10;
+        pointer-events: none;
+        font-size: 12px;
+        color: white;
+        text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black;
     }
     
     .enemy-waiting {

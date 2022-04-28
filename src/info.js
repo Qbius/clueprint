@@ -310,8 +310,11 @@ export const enemies = {
     ]
 };
 
+let cache = {};
 export function enemies_by_biome(biome) {
-    return (biome.toLowerCase() === 'all') ? Object.keys(enemies) : Object.keys(enemies).filter(enemy => enemies[enemy].includes(biome));
+    if (!(biome in cache))
+        cache[biome] = (biome.toLowerCase() === 'all') ? Object.keys(enemies) : Object.keys(enemies).filter(enemy => enemies[enemy].includes(biome));
+    return cache[biome];
 }
 
 export const levels = {

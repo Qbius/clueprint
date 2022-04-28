@@ -1,6 +1,6 @@
 <script>
     import {donezo, levels, enemies_by_biome} from './info.js';
-    import {Button} from 'sveltestrap';
+    import {Icon, Button} from 'sveltestrap';
 
     export let selected;
 
@@ -12,6 +12,8 @@
     const biomes_per_level = unique_levels.map(l => [l, Object.keys(levels).filter(k => levels[k] === l)]);
 
     $: biomes_done = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_biome(l).every(enemy => enemy_done(enemy, $donezo))]));
+    $: done_by_biome = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_biome(l)]).map(([l, enemies]) => [l, `${enemies.filter(e => enemy_done(e, $donezo)).length}/${enemies.length}`]))
+    $: not_donezo = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_biome(l).filter(e => !enemy_done(e, $donezo))]));
     $: console.log(biomes_done);
 </script>
 
@@ -20,7 +22,26 @@
         <div class="map-row">
             {#each biomes as biome}
                 <div class={biomes_done[biome] ? 'button-overlay-done' : 'button-overlay'} style="margin: 3px; border-radius: 0.25rem;">
-                    <Button outline={biome !== selected} color={biomes_done[biome] ? 'success' : 'dark'} on:click={() => selected = biome}>{biome}</Button>
+                    <Button outline={biome !== selected} color={biomes_done[biome] ? 'success' : 'dark'} on:click={() => selected = biome} style="height: 100%;">
+                        <div style="display: flex; flex-direction: column;">    
+                            <div style="display: flex; align-items: center; justify-content: space-between; height: 100%;">
+                                <span>{biome}</span>
+                                <b style="font-size: 10px; margin-top: 2px; margin-left: 7px;">{done_by_biome[biome]}</b>
+                            </div>
+                            {#if biome !== 'All'}
+                            <div class="enemy-icons">
+                                <div style="width: 1px; height: 10px;"/>
+                                {#each not_donezo[biome].slice(0, 12) as enemy}
+                                <img alt="" src="/enemies/{enemy}.png" style="width: 10px; height: 10px">
+                                {/each}
+                                <div style="width: 1px; height: 10px;"/>
+                                {#if not_donezo[biome].length > 12}
+                                    <Icon name="three-dots"/>
+                                {/if}
+                            </div>
+                            {/if}
+                        </div>
+                    </Button>
                 </div>
             {/each}
         </div>
@@ -34,9 +55,9 @@
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        margin: 10px;
-        padding-top: 190px;
-        padding-bottom: 190px;
+        margin: 30px;
+        padding-top: 30px;
+        padding-bottom: 100px;
         border-radius: 12px;
         background-color: rgba(103, 126, 145, 0.75);
         align-self: center;
@@ -55,5 +76,17 @@
 
     .button-overlay-done {
         background-color: rgb(196, 224, 188);
+    }
+
+    .enemy-icons {
+        font-size: 6px;
+        display: flex;
+        overflow-x: scroll;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .enemy-icons::-webkit-scrollbar {
+        display: none;
     }
 </style>
