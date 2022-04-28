@@ -1,7 +1,6 @@
 <script>
 	import Map from './Map.svelte';
 	import Enemies from './Enemies.svelte';
-	import {enemies} from './info.js';
 
 	let selected_biome = "Prisoners' Quarters";
 </script>
