@@ -1,30 +1,36 @@
 <script>
-	export let name;
+	import Map from './Map.svelte';
+	import Enemies from './Enemies.svelte';
+	import {enemies} from './info.js';
+
+	let selected_biome = "Prisoners' Quarters";
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	<Map bind:selected={selected_biome}/>
+	<Enemies {selected_biome}/>
 </main>
 
 <style>
 	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
+		width: 100%;
+		height: 100%;
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
+		display: flex;
+		max-width: 240px;
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: flex-start;
+
+		background-image: url('/bg.png');
+		background-repeat: no-repeat;
+		background-size: cover;
 	}
 
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
+			flex-direction: row;
 		}
 	}
 </style>
