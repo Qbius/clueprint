@@ -29,16 +29,26 @@
                                 <b style="font-size: 10px; margin-top: 2px; margin-left: 7px;">{done_by_biome[biome]}</b>
                             </div>
                             {#if biome !== 'All'}
-                            <div class="enemy-icons">
-                                <div style="width: 1px; height: 10px;"/>
-                                {#each not_donezo[biome].slice(0, 12) as enemy}
-                                <img alt="" src="/enemies/{enemy}.png" style="width: 10px; height: 10px">
-                                {/each}
-                                <div style="width: 1px; height: 10px;"/>
-                                {#if not_donezo[biome].length > 12}
-                                    <Icon name="three-dots"/>
+                                {#if not_donezo[biome].length > 0}
+                                    <div class="enemy-icons">
+                                        <div style="width: 1px; height: 10px;"/>
+                                        {#each not_donezo[biome].slice(0, 12) as enemy}
+                                        <img alt="" src="/enemies/{enemy}.png" style="width: 10px; height: 10px">
+                                        {/each}
+                                        <div style="width: 1px; height: 10px;"/>
+                                        {#if not_donezo[biome].length > 12}
+                                            <Icon name="three-dots"/>
+                                        {/if}
+                                    </div>
+                                {:else}
+                                    <div style="display: flex;">
+                                        <div style="width: 1px; height: 10px;"/>
+                                        <div style="width: 100%; display: flex; justify-content: center;">
+                                            <span class="done-text">Done!</span>
+                                        </div>
+                                        <div style="width: 1px; height: 10px;"/>
+                                    </div>
                                 {/if}
-                            </div>
                             {/if}
                         </div>
                     </Button>
@@ -88,5 +98,12 @@
 
     .enemy-icons::-webkit-scrollbar {
         display: none;
+    }
+
+    .done-text {
+        font-family: Press Start 2P;
+        font-weight: normal;
+        text-transform: uppercase;
+        font-size: 6px;
     }
 </style>
