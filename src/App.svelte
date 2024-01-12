@@ -11,7 +11,7 @@
 
 <main>
 
-	<div class="content">
+	<div class="content"> 
 		<Map bind:selected={selected_biome} {bsc}/>
 		<Enemies {selected_biome} bind:bsc/>
 	</div>
