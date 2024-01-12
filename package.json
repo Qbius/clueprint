@@ -21,6 +21,6 @@
     "bootstrap-icons": "^1.8.1",
     "dagre": "^0.8.5",
     "sirv-cli": "^2.0.0",
-    "sveltestrap": "^5.9.0"
+    "sveltestrap": "^5.11.3"
   }
 }

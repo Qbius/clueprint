@@ -1,48 +1,73 @@
 <script>
-    import {donezo, enemies, enemies_by_biome} from './info.js';
+    import {donezo, enemies_by_bsc_by_biome} from './info.js';
+    import {enemies} from './enemies_raw';
+    import {Input} from 'sveltestrap';
 
     export let selected_biome;
+    export let bsc;
 
-    function enemy_done(enemy, list) {
-        console.log(enemy, list.includes(enemy));
+    function item_done(enemy, list) {
         return list.includes(enemy);
     }
     
-	$: relevant_enemies = (selected_biome !== 'All') ? enemies_by_biome(selected_biome) : Object.keys(enemies);
+    $: donezo_enemies = Object.keys(enemies).filter(enemy => Object.entries(enemies[enemy].items).every(([item, bscs]) => !bscs.includes(bsc) || item_done(item, $donezo)));
+	$: relevant_enemies = (selected_biome !== 'All') ? enemies_by_bsc_by_biome[bsc][selected_biome] : Object.keys(enemies);
 </script>
 
 <div id="component">
-    {#each relevant_enemies as enemy}
-        <div class="img-wrapper {enemy_done(enemy, $donezo) ? 'enemy-donezo' : 'enemy-waiting'}" on:click={() => {
-            let list = $donezo;
-            const index = list.indexOf(enemy);
-            if (index === -1) {
-                $donezo = [...list, enemy];
-            }
-            else {
-                list.splice(index, 1);
-                $donezo = list;
-            }
-            console.log($donezo);
-        }}>
-            <img alt="" src="/enemies/{enemy}.png">
-            {#if enemy_done(enemy, $donezo)}
-                <img alt="" src="/green_checkmark.png" class="img-checkmark">
-            {/if}
-            <span class="enemy-name">{enemy}</span>
+    <div style="width: 100%; margin: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+		<b class="box-shadow" style="font-size: 32px; padding: 3px; padding-left: 10px; padding-right: 10px; border-radius: 6px; background-color: rgba(250, 250, 250, 0.75);">{bsc} BSC</b>
+		<div style="width: 300px;">
+            <Input type="range" min={0} max={5} step={1} bind:value={bsc} style="border: 0px!important;" color="danger"/>
         </div>
-    {/each}
+	</div>
+    <div class="enemies-display">
+        {#each relevant_enemies as enemy}
+            <div class="img-wrapper {donezo_enemies.includes(enemy) ? 'enemy-donezo' : 'enemy-waiting'}" >
+                <div style="position: absolute; top: 5px; left: 5px; display: flex; flex-wrap: wrap;">
+                    {#each Object.entries(enemies[enemy].items) as [item, bscs]}
+                        {#if bscs.includes(bsc)}
+                            <div title={item} class="img-wrapper selectable {item_done(item, $donezo) ? 'item-donezo' : 'enemy-waiting'}" style="width: 30px; height: 30px;" on:click={() => {
+                                let list = $donezo;
+                                const index = list.indexOf(item);
+                                if (index === -1) {
+                                    $donezo = [...list, item];
+                                }
+                                else {
+                                    list.splice(index, 1);
+                                    $donezo = list;
+                                }
+                            }}>
+                                <img src="/items/{item}.png" alt="" style="width: 24px; height: 24px;">
+                            </div>
+                        {/if}
+                    {/each}
+                </div>
+                <img alt="" src="/enemies/{enemy}.png" style={donezo_enemies.includes(enemy) ? 'opacity: 0.2;' : ''}>
+                {#if donezo_enemies.includes(enemy)}
+                    <img alt="" src="/green_checkmark.png" class="img-checkmark">
+                {/if}
+                <span class="enemy-name">{enemy}</span>
+            </div>
+        {/each}
+    </div>
 </div>
 
 <style>
     #component {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         overflow-y: scroll;
+        width: 100%;
         max-height: 100%;
         padding: 20px;
         -ms-overflow-style: none;
         scrollbar-width: none;
+    }
+
+    .enemies-display {
+        display: flex;
+        flex-wrap: wrap;
     }
 
     #component::-webkit-scrollbar {
@@ -87,14 +112,18 @@
     }
     
     .enemy-waiting {
-        background-color: rgba(240, 234, 234, 0.75);
+        background-color: rgba(255, 255, 255, 0.75);
+    }
+
+    .item-donezo {
+        background-color: rgba(107, 150, 94, 0.75);
     }
     
     .enemy-donezo {
-        background-color: rgba(148, 189, 135, 0.75);
+        background-color: rgba(207, 207, 207, 0.75);
     }
 
-    .img-wrapper:hover {
+    .selectable:hover {
         filter: brightness(150%);
     }
 </style>

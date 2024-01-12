@@ -1,20 +1,21 @@
 <script>
-    import {donezo, levels, enemies_by_biome} from './info.js';
+    import {donezo, levels, enemies_by_bsc_by_biome} from './info.js';
+    import {enemies} from './enemies_raw';
     import {Icon, Button} from 'sveltestrap';
 
     export let selected;
+    export let bsc;
 
-    function enemy_done(enemy, list) {
+    function item_done(enemy, list) {
         return list.includes(enemy);
     }
 
     const unique_levels = Array.from(new Set(Object.values(levels))).sort((a, b) => a - b);
     const biomes_per_level = unique_levels.map(l => [l, Object.keys(levels).filter(k => levels[k] === l)]);
-
-    $: biomes_done = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_biome(l).every(enemy => enemy_done(enemy, $donezo))]));
-    $: done_by_biome = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_biome(l)]).map(([l, enemies]) => [l, `${enemies.filter(e => enemy_done(e, $donezo)).length}/${enemies.length}`]))
-    $: not_donezo = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_biome(l).filter(e => !enemy_done(e, $donezo))]));
-    $: console.log(biomes_done);
+    $: donezo_enemies = Object.keys(enemies).filter(enemy => Object.entries(enemies[enemy].items).every(([item, bscs]) => !bscs.includes(bsc) || item_done(item, $donezo)));
+    $: biomes_done = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_bsc_by_biome[bsc][l].every(enemy => donezo_enemies.includes(enemy))]));
+    $: done_by_biome = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_bsc_by_biome[bsc][l]]).map(([l, enemies]) => [l, `${enemies.filter(e => donezo_enemies.includes(e)).length}/${enemies.length}`]))
+    $: not_donezo = Object.fromEntries(Object.keys(levels).map(l => [l, enemies_by_bsc_by_biome[bsc][l].filter(e => !donezo_enemies.includes(e))]));
 </script>
 
 <div id="component">
@@ -60,8 +61,8 @@
 
 <style>
     #component {
-        min-width: 650px;
-        max-width: 650px;
+        min-width: 690px;
+        max-width: 690px;
         display: flex;
         flex-direction: column;
         align-items: stretch;
